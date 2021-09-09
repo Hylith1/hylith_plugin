@@ -17,8 +17,8 @@
     <form method="POST" action="<?php echo esc_url($plugin_admin_url);?>&section=roles&action=save-add-role">
         <table class="wp-list-table fixed striped table-view-list">
             <tr>
-                <th><?php esc_html_e("role","hylith-plugin") ?></th>
-                <td><input type="text" name="role"></td>
+                <th><?php esc_html_e("role name","hylith-plugin") ?></th>
+                <td><input type="text" name="role_name"></td>
             <tr>
             <tr>
                 <th><?php esc_html_e("display name","hylith-plugin") ?></th>
@@ -29,6 +29,6 @@
                 <td><input class="button-primary" type="submit" name="save" value="<?php esc_attr_e("Save","hylith-plugin") ?>"></td>
             <tr>
         </table>
-        <?php wp_nonce_field( 'add-role', '_hylith_nonce' ); ?>
+        <?php wp_nonce_field( '_add_role', '_hylith_nonce' ); ?>
     </form>
 </div>

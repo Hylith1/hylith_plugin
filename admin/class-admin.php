@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  * The admin-specific functionality of the plugin.
  *
@@ -51,8 +52,27 @@ class Hylith_Plugin_Admin {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
+		$this->load_dependencies();
 
 	}
+	
+	/**
+	 * Load the required dependencies for this class.
+	 *
+	 * @since    1.0.0
+	 * @access   private
+	 */
+	private function load_dependencies() {
+
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/utils/class-tools.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/controllers/class-core-controller.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/controllers/class-login-controller.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/controllers/class-roles-controller.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/controllers/class-things-controller.php';
+		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'admin/controllers/class-historical-controller.php';
+
+	}
+
 
 	/**
 	 * Register the stylesheets for the admin area.
@@ -100,56 +120,23 @@ class Hylith_Plugin_Admin {
 
 	}
 
-	/**
-	 * Get parameters safely.
-	 *
-	 * @since    1.0.0
-	 */
-	public function get_parameter( $key, $type = "" ) {
-
-		if ( ! isset( $_REQUEST[ $key ] ) || empty( $_REQUEST[ $key ] ) ) {
-			return null;
-		}
-
-		$data = null;
-
-		switch ($type) {
-			case 'text':
-				$data = strip_tags( (string) wp_unslash( sanitize_text_field( $_REQUEST[ $key ] ) ) );
-				break;
-			
-			default:
-				$data = strip_tags( (string) wp_unslash( $_REQUEST[ $key ] ) );
-				break;
-		}
-
-		return $data; 
-
-	}
-
 	public function handle_action( $section, $action ) {
-
-		require_once plugin_dir_path( dirname( __FILE__ ) ) . 'controllers/class-core-controller.php';
 		
-		$controller = new Core_Controller();
+		$controller = null;
 		
 		switch ( $section ) {
 
 			case 'login':
-				require_once plugin_dir_path( dirname( __FILE__ ) ) . 'controllers/class-login-controller.php';
-				$controller = (Login_Controller) $controller;
+				$controller = new Login_Controller();
 				break;
 			case 'roles':
-				require_once plugin_dir_path( dirname( __FILE__ ) ) . 'controllers/class-roles-controller.php';
-				$controller = (Roles_Controller) $controller;
+				$controller = new Roles_Controller();
 				break;
 			case 'things':
-				require_once plugin_dir_path( dirname( __FILE__ ) ) . 'controllers/class-things-controller.php';
-				$controller = (Things_Controller) $controller;
+				$controller = new Things_Controller();
 				break;
 			case 'historical':
-				require_once plugin_dir_path( dirname( __FILE__ ) ) . 'controllers/class-historical-controller.php';
-				$controller = (Historical_Controller) $controller;
+				$controller = new Historical_Controller();
 				break;
 
 			default:
@@ -167,8 +154,8 @@ class Hylith_Plugin_Admin {
 	 */
 	public function get_admin_view() {
 
-		$section = $this->get_parameter("section") != null ? $this->get_parameter("section") : "login";
-		$action = $this->get_parameter("action");
+		$section = Tools::get_parameter("section") != null ? Tools::get_parameter("section") : "login";
+		$action = Tools::get_parameter("action") != null ? Tools::get_parameter("action") : "";
 
 		$data = $this->handle_action( $section, $action );
 

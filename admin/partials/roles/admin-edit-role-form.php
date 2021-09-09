@@ -12,9 +12,6 @@
 ?>
 
 <div class="role_table table-wrapper">
-    
-    <?php  if ( current_user_can( 'edit_plugins' ) ): ?>
-    <?php endif; ?>
 
     <form method="POST" action="<?php echo esc_url( $plugin_admin_url ); ?>&section=roles&action=save-edit-roles">
         <table class="wp-list-table widefat fixed striped table-view-list posts">
@@ -35,29 +32,32 @@
             </thead>
             <tbody>
                 <?php
-                    foreach( $data['roles'] as $role ) {
+                    foreach( $data['roles'] as $role_name => $role_data ) {
                         ?>
                             <tr>
                             <th>
                                 <?php
-                                echo esc_html($role['name'] )
+                                echo esc_html($role_data['name'] )
                                 ?>
                             </th>
                         <?php
                         foreach( $data['capabilities'] as $cap ) {
-                            if ( array_key_exists($cap, $role['capabilities'] ) ){
+                            if ( array_key_exists($cap, $role_data['capabilities'] ) ){
                                 ?>
-                                    <td><input type="checkbox" name="<?php echo esc_attr( $role['name'] ) ?>[<?php echo esc_attr( $cap ) ?>]" checked></td>
+                                    <td><input type="checkbox" name="<?php echo esc_attr( $role_name ) ?>[<?php echo esc_attr( $cap ) ?>]" checked></td>
                                 <?php
                             } else {
                                 ?>
-                                    <td><input type="checkbox" name="<?php echo esc_attr( $role['name'] ) ?>[<?php echo esc_attr( $cap ) ?>]"></td>
+                                    <td><input type="checkbox" name="<?php echo esc_attr( $role_name ) ?>[<?php echo esc_attr( $cap ) ?>]"></td>
                                 <?php
                             }
                         }
                         ?>  
-                            <td><a href='' class='button'> Delete </a></td></tr>
-                            </tr>
+                            <td>
+                                <?php $nonced_url = wp_nonce_url( esc_url( $plugin_admin_url ). '&section=roles&action=delete-role&role_name='. esc_attr( $role_name ), '_delete_role'); ?>
+                                <a href="<?php echo $nonced_url ?>" class="button"> Delete </a>
+                            </td>
+                        </tr>
                         <?php
                     }
                 ?>
